@@ -25,8 +25,8 @@ public class LAGrammarLexer extends Lexer {
 		T__45=46, T__46=47, T__47=48, T__48=49, T__49=50, PALAVRA_CHAVE=51, NUM_INT=52, 
 		NUM_REAL=53, IDENT=54, CADEIA=55, COMENTARIO=56, WS=57, OP_RELACIONAIS=58, 
 		OP_ARITMETICOS=59, ABREPAR=60, FECHAPAR=61, ABRECOL=62, FECHACOL=63, DOT=64, 
-		DOTS=65, COMMA=66, DELIM=67, ENDERECO=68, COMENTARIO_N_FECHADO=69, CADEIA_N_FECHADA=70, 
-		SIMBOLO_DESCONHECIDO=71;
+		DOTS=65, COMMA=66, DELIM=67, ENDERECO=68, ERROR_COMENTARIO=69, ERROR_CADEIA=70, 
+		UNKNOWN=71;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 	};
@@ -45,8 +45,8 @@ public class LAGrammarLexer extends Lexer {
 			"T__41", "T__42", "T__43", "T__44", "T__45", "T__46", "T__47", "T__48", 
 			"T__49", "PALAVRA_CHAVE", "NUM_INT", "NUM_REAL", "IDENT", "CADEIA", "ESC_SEQ", 
 			"COMENTARIO", "WS", "OP_RELACIONAIS", "OP_ARITMETICOS", "ABREPAR", "FECHAPAR", 
-			"ABRECOL", "FECHACOL", "DOT", "DOTS", "COMMA", "DELIM", "ENDERECO", "COMENTARIO_N_FECHADO", 
-			"CADEIA_N_FECHADA", "SIMBOLO_DESCONHECIDO"
+			"ABRECOL", "FECHACOL", "DOT", "DOTS", "COMMA", "DELIM", "ENDERECO", "ERROR_COMENTARIO", 
+			"ERROR_CADEIA", "UNKNOWN"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -73,8 +73,8 @@ public class LAGrammarLexer extends Lexer {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, "PALAVRA_CHAVE", "NUM_INT", "NUM_REAL", "IDENT", "CADEIA", 
 			"COMENTARIO", "WS", "OP_RELACIONAIS", "OP_ARITMETICOS", "ABREPAR", "FECHAPAR", 
-			"ABRECOL", "FECHACOL", "DOT", "DOTS", "COMMA", "DELIM", "ENDERECO", "COMENTARIO_N_FECHADO", 
-			"CADEIA_N_FECHADA", "SIMBOLO_DESCONHECIDO"
+			"ABRECOL", "FECHACOL", "DOT", "DOTS", "COMMA", "DELIM", "ENDERECO", "ERROR_COMENTARIO", 
+			"ERROR_CADEIA", "UNKNOWN"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();

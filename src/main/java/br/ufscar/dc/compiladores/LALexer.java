@@ -6,8 +6,9 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;
 
+// Classe que extende o tipo do Lexer criado pelo Antlr
+// O intuito aqui é a identificação de símbolos não-reconhecidos, da regra léxica UNKNOWN
 public class LALexer extends LAGrammarLexer {
-    
     private Queue<Token> queue = new java.util.LinkedList<Token>();
     
     public LALexer(CharStream input) {
@@ -25,7 +26,7 @@ public class LALexer extends LAGrammarLexer {
 
         // Caso o token nao pertença ao Padrão UNKNOWN, o método atua como o da
         // classe-pai
-        if (next.getType() != SIMBOLO_DESCONHECIDO) {
+        if (next.getType() != UNKNOWN) {
             return next;
         }
 
@@ -38,7 +39,7 @@ public class LALexer extends LAGrammarLexer {
         // Enquanto houverem tokens não-reconhecidos em sequência, consumi-los e
         // adicionar seus lexemas
         // ao 'stringBuilder'
-        while (next.getType() == SIMBOLO_DESCONHECIDO) {
+        while (next.getType() == UNKNOWN) {
             builder.append(next.getText());
             next = super.nextToken();
         }
@@ -49,6 +50,6 @@ public class LALexer extends LAGrammarLexer {
 
         queue.offer(next);
 
-        return new CommonToken(SIMBOLO_DESCONHECIDO, builder.toString());
+        return new CommonToken(UNKNOWN, builder.toString());
     }
 }
