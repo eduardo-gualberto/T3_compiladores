@@ -1,4 +1,4 @@
-// Generated from /home/eduardo/Documents/Compiladores/Lexer/src/main/antlr4/br/ufscar/dc/compiladores/MyLexer.g4 by ANTLR 4.9.2
+// Generated from /home/eduardo/Documents/Compiladores/T2/Syntax/src/main/antlr4/br/ufscar/dc/compiladores/MyLexer.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
