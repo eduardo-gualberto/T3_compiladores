@@ -54,6 +54,6 @@ public class LACustomErrorMessage implements ANTLRErrorListener {
         }
         hasSyntaxError = true;
         pw.write("Fim da compilacao\n");
-        pw.close(); // Fechando arquivo escrito
+        // pw.close(); // Fechando arquivo escrito
     }
 }

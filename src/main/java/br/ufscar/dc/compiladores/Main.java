@@ -9,6 +9,8 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 
+import br.ufscar.dc.compiladores.LAGrammarParser.ProgramaContext;
+
 public class Main {
 
     private static String lexicalError = "";
@@ -24,7 +26,6 @@ public class Main {
             // Loop que coleta cada um dos tokens gerados pelo Lexer, até seja coletado um
             // token do tipo 'End Of File'
             Token t = null;
-
 
             // Analise lexica
             while ((t = lex.nextToken()).getType() != Token.EOF) {
@@ -57,14 +58,19 @@ public class Main {
 
                 // Instancia um novo listener de erros para o Parser
                 LACustomErrorMessage errorListener = new LACustomErrorMessage(pw);
-                
+
                 // Remove o listener padrao do Parser e adiciona o customizado
                 parser.removeErrorListeners();
                 parser.addErrorListener(errorListener);
-                
+
                 // Inicia o processo de análise sintática
-                parser.programa();
-            } 
+                // Analise semantica
+                ProgramaContext tree = parser.programa();
+                LASemantics semantics = new LASemantics();
+                LASemanticsUtils.pw = pw;
+                semantics.visitPrograma(tree);
+                LASemanticsUtils.errosSemanticos.forEach(s -> System.out.println(s));
+            }
             // Caso existam erros léxicos
             else {
                 pw.write(lexicalError);
@@ -72,17 +78,20 @@ public class Main {
                 // O uso de pw.close() é intencional ao longo do programa,
                 // mesmo que o formato de Try-Catch utilizado já feche o arquivo ao fim.
                 // Ao tentar escrever em um arquivo já fechado
-                // uma IOException é lançada e tratada pelo programa, no sentido de encerrar sua execução
+                // uma IOException é lançada e tratada pelo programa, no sentido de encerrar sua
+                // execução
                 pw.close();
             }
-            pw.write(generatedOutput);
+            // pw.write(generatedOutput);
             pw.close();
+
         } catch (IOException ex) {
             // Tratamento das IOExceptions lançadas
         }
     }
 
-    // 'handler' responsável por gerar o output padronizado e especificado pelo documento da trabalho 2
+    // 'handler' responsável por gerar o output padronizado e especificado pelo
+    // documento da trabalho 2
     public static void handleGenericToken(Token t) {
         String token = t.getText();
         String regra = LAGrammarLexer.VOCABULARY.getDisplayName(t.getType());

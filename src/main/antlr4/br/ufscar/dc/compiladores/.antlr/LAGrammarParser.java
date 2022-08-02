@@ -1,4 +1,4 @@
-// Generated from /home/eduardo/Documents/Compiladores/T2/Syntax/src/main/antlr4/br/ufscar/dc/compiladores/LAGrammar.g4 by ANTLR 4.9.2
+// Generated from /home/eduardo/Documents/Compiladores/T3/Semantics/src/main/antlr4/br/ufscar/dc/compiladores/LAGrammar.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
