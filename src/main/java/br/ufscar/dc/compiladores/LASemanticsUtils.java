@@ -24,7 +24,6 @@ import br.ufscar.dc.compiladores.SymbolTableInput.LATypes;
 
 public class LASemanticsUtils {
     public static List<String> errosSemanticos = new ArrayList<>();
-    public static PrintWriter pw;
 
     public static void adicionarErroSemantico(Token t, String mensagem) {
         int linha = t.getLine();
@@ -33,28 +32,44 @@ public class LASemanticsUtils {
 
     public static LATypes verificarTipo(SymbolTable tabela, LAGrammarParser.CmdAtribuicaoContext ctx) {
         String ident = ctx.identificador().getText();
-        ExpressaoContext expCtx = ctx.expressao();
+        // ExpressaoContext expCtx = ctx.expressao();
         LATypes identType = tabela.peek(ident).getType();
-        LATypes expType = verificarTipo(tabela, expCtx);
+        // LATypes expType = verificarTipo(tabela, expCtx);
+        String expStr = ctx.expressao().getText();
 
-        pw.println(identType.toString() + " == " + expType.toString());
+        for(var id: tabela.getKeys()) {
+            SymbolTableInput idObj = tabela.peek(id);
+            String idName = idObj.getName();
+            LATypes idType = idObj.getType();
+            // adicionarErroSemantico(ctx.start, idType.toString());
 
-        if (expType == identType) {
-            return expType;
-        } else {
-            pw.println("erro atribuicao: " + ctx.getText());
-            return LATypes.ERROR;
+            if(expStr.contains(idName)) {
+                if(idType != identType)
+                    return LATypes.ERROR;
+            }
         }
+
+        for(int i = 0; i < 10; i++) {
+            if(expStr.contains("+" + String.valueOf(i))) {
+                return LATypes.ERROR;
+            }
+        }
+
+        return identType;
+        
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, ExpressaoContext ctx) {
+        if(ctx.op_logico_1().size() != 0) {
+            return LATypes.BOOL;
+        }
         LATypes aux = null;
         for (var termo : ctx.termo_logico()) {
             LATypes termo_type = verificarTipo(tabela, termo);
             if (aux == null)
                 aux = termo_type;
             else if (aux != termo_type || termo_type == LATypes.ERROR) {
-                pw.println("erro expressap: " + ctx.getText());
+
                 return LATypes.ERROR;
             }
         }
@@ -62,19 +77,26 @@ public class LASemanticsUtils {
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, Termo_logicoContext ctx) {
+        if(ctx.op_logico_2().size() != 0) {
+            return LATypes.BOOL;
+        }
+        
         LATypes aux = null;
         for (var fator : ctx.fator_logico()) {
             LATypes fator_type = verificarTipo(tabela, fator);
             if (aux == null)
                 aux = fator_type;
             else if (aux != fator_type || fator_type == LATypes.ERROR)
-                pw.println("erro termo_logico: " + ctx.getText());
-            return LATypes.ERROR;
+
+                return LATypes.ERROR;
         }
         return aux;
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, Fator_logicoContext ctx) {
+        if(ctx.getText().contains("nao")) {
+            return LATypes.BOOL;
+        }
         return verificarTipo(tabela, ctx.parcela_logica());
     }
 
@@ -99,7 +121,6 @@ public class LASemanticsUtils {
             if (aux == null) {
                 aux = termo_type;
             } else if (aux != termo_type || termo_type == LATypes.ERROR) {
-                pw.println("erro exp_aritmetica: " + ctx.getText());
                 return LATypes.ERROR;
             }
         }
@@ -114,7 +135,7 @@ public class LASemanticsUtils {
             if (aux == null) {
                 aux = fator_type;
             } else if (aux != fator_type || fator_type == LATypes.ERROR) {
-                pw.println("erro termo: " + ctx.getText());
+
                 return LATypes.ERROR;
             }
         }
@@ -129,7 +150,7 @@ public class LASemanticsUtils {
             if (aux == null) {
                 aux = parcela_type;
             } else if (aux != parcela_type || parcela_type == LATypes.ERROR) {
-                pw.println("erro fator: " + ctx.getText());
+
                 return LATypes.ERROR;
             }
         }
@@ -138,17 +159,17 @@ public class LASemanticsUtils {
 
     public static LATypes verificarTipo(SymbolTable tabela, LAGrammarParser.ParcelaContext ctx) {
         if (ctx.op_unario() != null) {
-            pw.println("erro parcela: " + ctx.getText());
+
             return verificarTipo(tabela, ctx.parcela_unario());
         } else if (ctx.op_unario() == null && ctx.parcela_unario() != null) {
             // adicionarErroSemantico(ctx.start, "Parcela unaria exige o uso do operador
             // unario");
-            pw.println("erro parcela: " + ctx.getText());
+
             return LATypes.ERROR;
         } else if (ctx.op_unario() != null && ctx.parcela_nao_unario() != null) {
             // adicionarErroSemantico(ctx.start, "Parcela nao unaria nao pode ser precidida
             // por um operador unario");
-            pw.println("erro parcela: " + ctx.getText());
+
             return LATypes.ERROR;
         } else {
             return verificarTipo(tabela, ctx.parcela_nao_unario());
@@ -165,7 +186,7 @@ public class LASemanticsUtils {
 
     private static LATypes verificarTipo(SymbolTable tabela, IdentificadorContext ctx) {
         if (!tabela.contains(ctx.getText())) {
-            pw.println("erro identificador: " + ctx.getText());
+
             return LATypes.ERROR;
         }
         return verificarTipo(tabela, ctx.getText());

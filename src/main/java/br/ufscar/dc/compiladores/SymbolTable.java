@@ -1,5 +1,6 @@
 package br.ufscar.dc.compiladores;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import br.ufscar.dc.compiladores.SymbolTableInput.LATypes;
@@ -24,5 +25,13 @@ public class SymbolTable {
 
     public SymbolTableInput peek(String name) {
         return this.map.get(name);
+    }
+
+    public ArrayList<String> getKeys() {
+        ArrayList<String> ret = new ArrayList<String>();
+        for(var key : map.keySet()) {
+            ret.add(key);
+        }
+        return ret;
     }
 }

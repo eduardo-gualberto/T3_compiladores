@@ -67,7 +67,6 @@ public class Main {
                 // Analise semantica
                 ProgramaContext tree = parser.programa();
                 LASemantics semantics = new LASemantics();
-                LASemanticsUtils.pw = pw;
                 semantics.visitPrograma(tree);
                 LASemanticsUtils.errosSemanticos.forEach(s -> pw.println(s));
                 pw.println("Fim da compilacao");
