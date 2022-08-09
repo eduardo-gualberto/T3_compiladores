@@ -37,39 +37,35 @@ public class LASemanticsUtils {
         // LATypes expType = verificarTipo(tabela, expCtx);
         String expStr = ctx.expressao().getText();
 
-        for(var id: tabela.getKeys()) {
+        for (var id : tabela.getKeys()) {
             SymbolTableInput idObj = tabela.peek(id);
             String idName = idObj.getName();
             LATypes idType = idObj.getType();
             // adicionarErroSemantico(ctx.start, idType.toString());
 
-            if(expStr.contains(idName)) {
-                if(idType != identType)
+            if (expStr.contains(idName)) {
+                if (idType != identType)
                     return LATypes.ERROR;
             }
         }
 
-        for(int i = 0; i < 10; i++) {
-            if(expStr.contains("+" + String.valueOf(i))) {
+        for (int i = 0; i < 10; i++) {
+            if (expStr.contains("+" + String.valueOf(i))) {
                 return LATypes.ERROR;
             }
         }
 
         return identType;
-        
+
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, ExpressaoContext ctx) {
-        if(ctx.op_logico_1().size() != 0) {
-            return LATypes.BOOL;
-        }
         LATypes aux = null;
         for (var termo : ctx.termo_logico()) {
             LATypes termo_type = verificarTipo(tabela, termo);
             if (aux == null)
                 aux = termo_type;
-            else if (aux != termo_type || termo_type == LATypes.ERROR) {
-
+            else if (aux != termo_type && termo_type != LATypes.ERROR) {
                 return LATypes.ERROR;
             }
         }
@@ -77,27 +73,26 @@ public class LASemanticsUtils {
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, Termo_logicoContext ctx) {
-        if(ctx.op_logico_2().size() != 0) {
-            return LATypes.BOOL;
-        }
-        
         LATypes aux = null;
         for (var fator : ctx.fator_logico()) {
             LATypes fator_type = verificarTipo(tabela, fator);
             if (aux == null)
                 aux = fator_type;
-            else if (aux != fator_type || fator_type == LATypes.ERROR)
-
+            else if (aux != fator_type && fator_type != LATypes.ERROR)
                 return LATypes.ERROR;
         }
         return aux;
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, Fator_logicoContext ctx) {
-        if(ctx.getText().contains("nao")) {
+        LATypes parcelaType = verificarTipo(tabela, ctx.parcela_logica());
+        if (ctx.getText().contains("nao") && parcelaType == LATypes.BOOL) {
             return LATypes.BOOL;
         }
-        return verificarTipo(tabela, ctx.parcela_logica());
+        if (ctx.getText().contains("nao") && parcelaType != LATypes.BOOL) {
+            return LATypes.ERROR;
+        }
+        return parcelaType;
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, Parcela_logicaContext ctx) {
@@ -108,10 +103,17 @@ public class LASemanticsUtils {
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, Exp_relacionalContext ctx) {
-        if (ctx.exp_aritmetica().size() > 1)
-            return LATypes.BOOL;
+        LATypes aux = null;
 
-        return verificarTipo(tabela, ctx.exp_aritmetica(0));
+        for (var expA : ctx.exp_aritmetica()) {
+            LATypes expAType = verificarTipo(tabela, expA);
+            if (aux == null)
+                aux = expAType;
+            else if (aux != expAType && expAType != LATypes.ERROR)
+                return LATypes.ERROR;
+        }
+
+        return aux;
     }
 
     public static LATypes verificarTipo(SymbolTable tabela, LAGrammarParser.Exp_aritmeticaContext ctx) {
@@ -120,7 +122,7 @@ public class LASemanticsUtils {
             LATypes termo_type = verificarTipo(tabela, ta);
             if (aux == null) {
                 aux = termo_type;
-            } else if (aux != termo_type || termo_type == LATypes.ERROR) {
+            } else if (aux != termo_type && termo_type != LATypes.ERROR) {
                 return LATypes.ERROR;
             }
         }
@@ -158,39 +160,28 @@ public class LASemanticsUtils {
     }
 
     public static LATypes verificarTipo(SymbolTable tabela, LAGrammarParser.ParcelaContext ctx) {
-        if (ctx.op_unario() != null) {
-
+        if (ctx.parcela_unario() != null)
             return verificarTipo(tabela, ctx.parcela_unario());
-        } else if (ctx.op_unario() == null && ctx.parcela_unario() != null) {
-            // adicionarErroSemantico(ctx.start, "Parcela unaria exige o uso do operador
-            // unario");
-
-            return LATypes.ERROR;
-        } else if (ctx.op_unario() != null && ctx.parcela_nao_unario() != null) {
-            // adicionarErroSemantico(ctx.start, "Parcela nao unaria nao pode ser precidida
-            // por um operador unario");
-
-            return LATypes.ERROR;
-        } else {
+        else
             return verificarTipo(tabela, ctx.parcela_nao_unario());
-        }
     }
 
     private static LATypes verificarTipo(SymbolTable tabela, Parcela_nao_unarioContext ctx) {
         if (ctx.CADEIA() != null) {
             return LATypes.STR;
         } else {
-            return verificarTipo(tabela, ctx.identificador());
+            return verificarTipo(tabela, ctx.identificador().getText());
         }
     }
 
-    private static LATypes verificarTipo(SymbolTable tabela, IdentificadorContext ctx) {
-        if (!tabela.contains(ctx.getText())) {
+    // private static LATypes verificarTipo(SymbolTable tabela, IdentificadorContext
+    // ctx) {
+    // if (!tabela.contains(ctx.getText())) {
 
-            return LATypes.ERROR;
-        }
-        return verificarTipo(tabela, ctx.getText());
-    }
+    // return LATypes.ERROR;
+    // }
+    // return verificarTipo(tabela, ctx.getText());
+    // }
 
     private static LATypes verificarTipo(SymbolTable tabela, Parcela_unarioContext ctx) {
         if (ctx.NUM_INT() != null) {
@@ -198,9 +189,11 @@ public class LASemanticsUtils {
         } else if (ctx.NUM_REAL() != null) {
             return LATypes.REAL;
         } else if (ctx.identificador() != null) {
-            return LATypes.IDENT;
+            return verificarTipo(tabela, ctx.identificador().getText());
+        } else if (ctx.IDENT() == null && ctx.expressao() != null) {
+            return verificarTipo(tabela, ctx.expressao(0));
         } else {
-            return LATypes.BOOL;
+            return LATypes.ERROR;
         }
     }
 
